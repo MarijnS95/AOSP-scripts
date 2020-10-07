@@ -1,16 +1,13 @@
 #! /usr/bin/bash
 
-from=$1
-to=$2
-
 if [ -z $REPO_PROJECT ]; then
-    repo forall -c `realpath "${BASH_SOURCE[0]}"` $from $to
+    repo forall -c `realpath "${BASH_SOURCE[0]}"` "$@"
 else
-    if git rev-parse --quiet $from $to 1>/dev/null 2>/dev/null; then
-        if ! git diff --quiet $from $to; then
+    if git rev-parse --quiet "$@" 1>/dev/null 2>/dev/null; then
+        if ! git diff --quiet "$@"; then
             echo "--------------------------------------------------------"
             echo "Diff for $REPO_PROJECT:"
-            git --no-pager diff $from $to
+            git --no-pager diff "$@"
         fi
     fi
 fi
