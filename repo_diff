@@ -1,7 +1,7 @@
 #! /usr/bin/bash
 
-if [ -z $REPO_PROJECT ]; then
-    repo forall -c `realpath "${BASH_SOURCE[0]}"` "$@"
+if [ -z "$REPO_PROJECT" ]; then
+    repo forall -c "$(realpath "${BASH_SOURCE[0]}")" "$@"
 else
     if git rev-parse --quiet "$@" 1>/dev/null 2>/dev/null; then
         if ! git diff --quiet "$@"; then
