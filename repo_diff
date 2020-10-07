@@ -1,0 +1,22 @@
+#! /usr/bin/bash
+
+from=$1
+to=$2
+
+if [ -z $REPO_PROJECT ]; then
+    repo forall -c `realpath "${BASH_SOURCE[0]}"` $from $to
+else
+    git rev-parse --quiet $from $to 1>/dev/null 2>/dev/null
+    ret=$?
+    # echo "Ret: $ret"
+    if [ $ret -eq 0 ]; then
+        # echo "$REPO_PROJECT OK"
+        if ! git diff --quiet $from $to; then
+            echo "--------------------------------------------------------"
+            echo "Diff for $REPO_PROJECT:"
+            git --no-pager diff $from $to
+        fi
+    # else
+    #     echo "$REPO_PROJECT: No $from or $to"
+    fi
+fi
