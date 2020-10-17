@@ -1,0 +1,24 @@
+. build/envsetup.sh
+
+# https://android.googlesource.com/platform/build/+/master/Changes.md#PATH_Tools
+# export TEMPORARY_DISABLE_PATH_RESTRICTIONS=true
+# git fetch "https://android.googlesource.com/platform/build/soong" refs/changes/65/1112165/2 && git cherry-pick FETCH_HEAD
+export WITHOUT_CHECK_API=true
+echo "Api check disabled: ${WITHOUT_CHECK_API}"
+
+alias flashall="m && fastboot flashall"
+
+function flash() {
+	names=""
+	for n in "$@"; do
+		names="$names ${n}image"
+	done
+	echo "Building $names"
+	m $names || return 1
+	for n in "$@"; do
+		fastboot flash $n || return 1
+	done
+	fastboot continue || fastboot reboot
+}
+
+# vim: ft=sh
