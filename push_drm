@@ -1,0 +1,35 @@
+#! /usr/bin/sh
+
+export TEMPORARY_DISABLE_PATH_RESTRICTIONS=true
+
+set -e
+
+if [ -z "$ANDROID_PRODUCT_OUT" ]; then
+echo "Enter an android environment first!"
+exit 1
+fi
+
+device=`basename $ANDROID_PRODUCT_OUT`
+
+base_path=vendor
+
+case $device in
+suzu)
+base_path=system/vendor;;
+tone)
+base_path=system/vendor;;
+#maybe?
+esac
+
+echo "Building upstream graphics for $device"
+
+build/soong/soong_ui.bash --make-mode libGLES_mesa gallium_dri hwcomposer.drm gralloc.gbm
+
+adb push out/target/product/$device/$base_path/lib64/egl/libGLES_mesa.so $base_path/lib64/egl/
+adb push out/target/product/$device/$base_path/lib64/dri/gallium_dri.so $base_path/lib64/dri/
+# Just a symlink...
+# adb push out/target/product/$device/$base_path/lib64/dri/msm_dri.so $base_path/lib64/dri/
+adb push out/target/product/$device/$base_path/lib64/hw/hwcomposer.drm.so $base_path/lib64/hw/
+adb push out/target/product/$device/$base_path/lib64/hw/gralloc.gbm.so $base_path/lib64/hw/
+adb shell setprop ctl.restart surfaceflinger
+echo "=== Pushed and restarted! ==="
