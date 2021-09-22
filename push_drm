@@ -14,7 +14,7 @@ device=`basename $ANDROID_PRODUCT_OUT`
 base_path=vendor
 
 case $device in
-suzu)
+suzu*)
 base_path=system/vendor;;
 tone)
 base_path=system/vendor;;
@@ -23,10 +23,12 @@ esac
 
 echo "Building upstream graphics for $device"
 
-build/soong/soong_ui.bash --make-mode libGLES_mesa gallium_dri hwcomposer.drm gralloc.gbm
+build/soong/soong_ui.bash --make-mode libgallium_dri lib{EGL,GLESv1_CM,GLESv2}_mesa hwcomposer.drm gralloc.gbm
 
-adb push out/target/product/$device/$base_path/lib64/egl/libGLES_mesa.so $base_path/lib64/egl/
-adb push out/target/product/$device/$base_path/lib64/dri/gallium_dri.so $base_path/lib64/dri/
+adb root && adb remount
+
+adb push out/target/product/$device/$base_path/lib64/egl/lib{EGL,GLESv1_CM,GLESv2}_mesa.so $base_path/lib64/egl/
+adb push out/target/product/$device/$base_path/lib64/dri/libgallium_dri.so $base_path/lib64/dri/
 # Just a symlink...
 # adb push out/target/product/$device/$base_path/lib64/dri/msm_dri.so $base_path/lib64/dri/
 adb push out/target/product/$device/$base_path/lib64/hw/hwcomposer.drm.so $base_path/lib64/hw/
