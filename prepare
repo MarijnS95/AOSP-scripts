@@ -8,10 +8,16 @@ echo "Api check disabled: ${WITHOUT_CHECK_API}"
 
 alias flashall="m && fastboot flashall"
 
+relative_out=${ANDROID_PRODUCT_OUT#$ANDROID_BUILD_TOP/}
+
 function flash() {
 	names=""
 	for n in "$@"; do
-		names="$names ${n}image"
+		if [ "$n" == "dtbo" ]; then
+			names+=" $relative_out/dtbo.img"
+		else
+			names+=" ${n/_/}image"
+		fi
 	done
 	echo "Building $names"
 	m $names || return 1
